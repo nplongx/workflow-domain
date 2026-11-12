@@ -5,9 +5,9 @@
 
 A pure Rust library for workflow domain types, validation, dependency graphs, immutable plan compilation, policy snapshots, and content-addressed evidence references.
 
-This repository is an independent extraction of the `runalith-domain` crate from [Runalith](https://github.com/nplongx/runalith). Source baseline: `29c24cfa2b6ead5704d26cf2746bc384f2938b80`. The extraction preserves current domain behavior; it does not claim complete compatibility with every Runalith runtime path.
+This is a standalone workflow-domain library built from immutable source snapshot `29c24cfa2b6ead5704d26cf2746bc384f2938b80`. It owns its domain types, validation rules, tests, and release lifecycle.
 
-> **Status:** `0.1.0`, initial standalone publication. API and compatibility surface may change before `1.0.0`. This library is not a workflow engine and is not production-certified as a complete authorization or execution system.
+> **Status:** `0.2.0`, generic workflow identifier semantics. API and compatibility surface may change before `1.0.0`. This library is not a workflow engine and is not production-certified as a complete authorization or execution system.
 
 ## Terminology
 
@@ -48,7 +48,7 @@ use workflow_domain::{TaskSpec, WorkflowPlan, WorkflowProposal};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let proposal = WorkflowProposal {
-        workflow_id: "job_example".into(),
+        workflow_id: "workflow_example".into(),
         title: "Prepare design".into(),
         goal: "Produce a reviewed design".into(),
         tasks: vec![TaskSpec {
@@ -72,7 +72,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The `job_` workflow identifier prefix is preserved from the extracted source contract. It is a compatibility constraint, not a universal workflow standard.
+Workflow identifiers use a bounded ASCII grammar and are not coupled to any message protocol or host-specific prefix. Legacy `job_id` representations remain isolated in compatibility adapters.
 
 ## Development
 

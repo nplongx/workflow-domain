@@ -186,15 +186,7 @@ pub struct WorkflowProposal {
 impl WorkflowProposal {
     /// Validate identity and task graph before persistence.
     pub fn validate(&self) -> Result<(), DomainError> {
-        validate_non_empty(&self.workflow_id, "workflow_id")?;
-        if !self.workflow_id.starts_with("job_")
-            || self.workflow_id.len() <= 4
-            || !self.workflow_id[4..]
-                .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'-')
-        {
-            return Err(DomainError::InvalidWorkflowId);
-        }
+        validate_workflow_identifier(&self.workflow_id)?;
         validate_non_empty(&self.title, "title")?;
         validate_non_empty(&self.goal, "goal")?;
         WorkflowPlan {
@@ -771,8 +763,10 @@ pub enum DomainError {
     /// Required text field is empty.
     #[error("{0} must be a non-empty string")]
     EmptyField(&'static str),
-    /// Workflow ID does not use the COS-AP v1 `job_` identity form.
-    #[error("workflow_id must use the job_ prefix and URL-safe ASCII suffix")]
+    /// Workflow identifier is outside the generic bounded identifier grammar.
+    #[error(
+        "workflow_id must be 1-128 ASCII letters, digits, underscores, or hyphens and start with a letter or digit"
+    )]
     InvalidWorkflowId,
     /// A string exceeds its contract limit.
     #[error("field exceeds its contract limit: {0}")]
@@ -890,6 +884,20 @@ fn validate_sha256(value: &str, subject: &str) -> Result<(), DomainError> {
     Ok(())
 }
 
+fn validate_workflow_identifier(value: &str) -> Result<(), DomainError> {
+    let valid = !value.is_empty()
+        && value.len() <= 128
+        && value.as_bytes()[0].is_ascii_alphanumeric()
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'-');
+    if valid {
+        Ok(())
+    } else {
+        Err(DomainError::InvalidWorkflowId)
+    }
+}
+
 fn validate_non_empty(value: &str, field: &'static str) -> Result<(), DomainError> {
     if value.trim().is_empty() {
         return Err(DomainError::EmptyField(field));
@@ -909,6 +917,43 @@ mod tests {
             depends_on: depends_on.iter().map(|value| (*value).into()).collect(),
             required_evidence: vec!["artifact".into()],
             inputs: BTreeMap::new(),
+        }
+    }
+
+    #[test]
+    fn workflow_identifier_uses_generic_bounded_ascii_grammar() {
+        for workflow_id in ["workflow-1", "release_candidate", "1", "job_legacy"] {
+            let proposal = WorkflowProposal {
+                workflow_id: workflow_id.into(),
+                title: "Title".into(),
+                goal: "Goal".into(),
+                tasks: vec![TaskSpec {
+                    task_id: "task-1".into(),
+                    role: "worker".into(),
+                    description: "Do work".into(),
+                    depends_on: vec![],
+                    required_evidence: vec![],
+                    inputs: BTreeMap::new(),
+                }],
+                metadata: BTreeMap::new(),
+            };
+            assert!(proposal.validate().is_ok(), "{workflow_id}");
+        }
+        for workflow_id in [
+            "",
+            "-workflow",
+            "workflow name",
+            "workflow/1",
+            "é",
+            &"w".repeat(129),
+        ] {
+            assert!(
+                matches!(
+                    validate_workflow_identifier(workflow_id),
+                    Err(DomainError::InvalidWorkflowId)
+                ),
+                "{workflow_id}"
+            );
         }
     }
 

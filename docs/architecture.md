@@ -50,9 +50,9 @@ The `node_*` modules are optional compatibility surfaces, not a dependency on a 
 - Content hashes check content identity/consistency; they do not authenticate an author or prove claims.
 - Evidence producer fields are caller-supplied claims until a separate verifier establishes provenance.
 - `Unknown` outcomes remain distinct from success and failure.
-- Workflow identifiers currently retain the extracted `job_` prefix requirement.
+- Workflow identifiers use a bounded generic ASCII grammar. Legacy `job_id` fields are confined to compatibility projections.
 - Node compatibility modules model only their documented projection. Passing a differential fixture is not proof of complete Node parity.
 
 ## Dependency model
 
-Runtime dependencies are limited to serialization (`serde`, `serde_json`), hashing (`sha2`, `hex`), and typed errors (`thiserror`). No dependency from this repository points back to Runalith or to a host application.
+Runtime dependencies are limited to serialization (`serde`, `serde_json`), hashing (`sha2`, `hex`), and typed errors (`thiserror`). The package has no sibling-package, workspace, or host-application dependency.
