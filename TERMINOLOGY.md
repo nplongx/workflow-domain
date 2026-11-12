@@ -112,7 +112,11 @@ Do not use status, state, outcome, decision, and disposition as interchangeable 
 - Avoid naming public packages after source-tree directories, internal teams, deployment units, or runtime services.
 - The repository must be buildable from its own checkout. Dependencies copied under `vendor/` are internal source, not external repository dependencies.
 
-## 9. Package-specific scope\n\nThis package owns reusable workflow/task domain values, DAG validation, immutable plan compilation, graph snapshots, and explicitly isolated legacy-platform compatibility projections. Workflow identifiers are generic bounded identifiers and do not require a message-protocol prefix.\n\n## 10. Compatibility and change policy
+## 9. Package-specific scope
+
+This package owns reusable workflow/task domain values, DAG validation, immutable plan compilation, graph snapshots, and explicitly isolated legacy-platform compatibility projections. Workflow identifiers are generic bounded identifiers and do not require a message-protocol prefix.
+
+## 10. Compatibility and change policy
 
 Public wire fields, signed payloads, canonical JSON, database schemas, event discriminators, environment variables, and exported APIs are compatibility surfaces. Do not rename them in place merely for style.
 

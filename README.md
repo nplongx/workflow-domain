@@ -37,7 +37,7 @@ Add the Git dependency:
 
 ```toml
 [dependencies]
-workflow-domain = { git = "https://github.com/nplongx/workflow-domain" }
+workflow-domain = { git = "https://github.com/nplongx/workflow-domain", tag = "v0.2.0" }
 ```
 
 Validate a proposal and its task DAG:
