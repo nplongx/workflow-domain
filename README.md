@@ -9,6 +9,10 @@ This repository is an independent extraction of the `runalith-domain` crate from
 
 > **Status:** `0.1.0`, initial standalone publication. API and compatibility surface may change before `1.0.0`. This library is not a workflow engine and is not production-certified as a complete authorization or execution system.
 
+## Terminology
+
+See [TERMINOLOGY.md](TERMINOLOGY.md) for shared identifier, lifecycle, evidence, time-unit, and compatibility conventions.
+
 ## Scope
 
 - Workflow proposals, task definitions, task/workflow states, and lifecycle constraints.
